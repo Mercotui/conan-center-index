@@ -21,7 +21,7 @@ class RaylibConan(ConanFile):
     options = {
         "shared": [True, False],
         "fPIC": [True, False],
-        "opengl_version": [None, "4.3", "3.3", "2.1", "1.1", "ES-2.0"],
+        "opengl_version": [None, "4.3", "3.3", "2.1", "1.1", "ES-2.0", "ES-3.0"],
     }
     default_options = {
         "shared": False,
@@ -51,8 +51,6 @@ class RaylibConan(ConanFile):
         if self.settings.os not in ["Android", "Emscripten"]:
             self.requires("glfw/3.4")
             self.requires("opengl/system")
-        if self.settings.os == "Linux":
-            self.requires("xorg/system")
 
     def source(self):
         get(self, **self.conan_data["sources"][self.version], strip_root=True)
@@ -67,7 +65,7 @@ class RaylibConan(ConanFile):
         if self.settings.os == "Android":
             tc.variables["PLATFORM"] = "Android"
             tc.variables["USE_EXTERNAL_GLFW"] = "OFF"
-            tc.variables["OPENGL_VERSION"] = "ES 2.0"
+            tc.variables["OPENGL_VERSION"] = "ES 2.0" if not self.options.opengl_version else self.options.opengl_version
         else:
             tc.variables["USE_EXTERNAL_GLFW"] = "ON"
             tc.variables["OPENGL_VERSION"] = "OFF" if not self.options.opengl_version else self.options.opengl_version
